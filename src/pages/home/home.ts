@@ -11,4 +11,8 @@ export class HomePage {
 
   }
 
+  searchCongregations(ev: any) {
+  	
+  }
+
 }

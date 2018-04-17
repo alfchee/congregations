@@ -1,0 +1,12 @@
+<!-- Generated template for the CongregationListComponent component -->
+
+<ion-list>
+    <button ion-item *ngFor="let congregation of (congregationListState | async).congregations; let i = index">
+        <ion-thumbnail item-start>
+            <img src="imgs/logo.png">
+        </ion-thumbnail>
+        <h2>{{ congregation.name }}</h2>
+        <p>{{ congregation.city }}</p>
+        <button ion-button clear item-end>View</button>
+    </button>
+</ion-list>
