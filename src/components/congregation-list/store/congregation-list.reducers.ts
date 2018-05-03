@@ -2,11 +2,6 @@ import * as CongregationListAction from './congregation-list.actions'
 
 import { Congregation } from '../../../app/shared/congregation.model';
 
-// Interface of the whole Application State
-export interface AppState {
-  congregationList: State
-}
-
 // Interface of the state for the Congregations
 export interface State {
   congregations: Congregation[];

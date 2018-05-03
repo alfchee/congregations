@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Congregation } from '../../app/shared/congregation.model';
-import * as fromCongregationList from './store/congregation-list.reducers';
+import * as fromApp from '../../app/store/app.reducers';
 
 /**
  * Generated class for the CongregationListComponent component.
@@ -19,7 +19,7 @@ export class CongregationListComponent implements OnInit {
   // observable of the list of congregations
   congregationListState: Observable<{congregations: Congregation[]}>;
 
-  constructor(private store: Store<fromCongregationList.AppState>) {
+  constructor(private store: Store<fromApp.AppState>) {
     console.log('Hello CongregationListComponent Component');
   }
 

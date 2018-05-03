@@ -9,7 +9,7 @@ import { ListPage } from '../pages/list/list';
 
 // Importing the Components Module
 import { ComponentsModule } from '../components/components.module';
-import { congregationListReducer } from '../components/congregation-list/store/congregation-list.reducers';
+import { reducers } from './store/app.reducers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -26,7 +26,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     // adding the Components Module for importation
     ComponentsModule,
     // setting up the store module with the pieces of data that will store
-    StoreModule.forRoot({ congregationList: congregationListReducer })
+    StoreModule.forRoot(reducers)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
