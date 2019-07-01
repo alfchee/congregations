@@ -1,8 +1,0 @@
-{
-  "name": "congregations",
-  "app_id": "051bf43a",
-  "type": "ionic-angular",
-  "integrations": {
-    "cordova": {}
-  }
-}

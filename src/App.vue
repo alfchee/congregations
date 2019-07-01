@@ -1,0 +1,77 @@
+<template>
+  <v-app>
+    <BaseNavbar />
+    <NotificationContainer />
+
+    <v-content>
+      <router-view :key="$route.fullPath"></router-view>
+    </v-content>
+  </v-app>
+</template>
+
+<script>
+import firebase from '@/utils/firebase'
+import store from '@/store/store'
+import { mapState } from 'vuex'
+import NotificationContainer from '@/components/NotificationContainer.vue'
+import { setInterval, clearInterval } from 'timers'
+
+/**
+ * Observer waiting for the user get obtained from Firebase SDK
+ * if the user is logged in and the token is not expired
+ */
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    // if the user is obtained, then converting it to JSON
+    const jsonUser = user.toJSON()
+    // dispatching the log in
+    store.dispatch('user/signInWithUserAndToken', {
+      user: jsonUser,
+      token: jsonUser.stsTokenManager.accessToken
+    })
+    // getting the user information from DB
+    store.dispatch('user/fetchOrCreateUser')
+  }
+})
+
+export default {
+  name: 'App',
+  components: {
+    NotificationContainer
+  },
+  created() {
+    // set an interval to update the location every 10 seconds
+    this.updateLocation = setInterval(() => {
+      if (this.isLogged) {
+        this.$store.dispatch('getCurrentLocation')
+      }
+    }, 10000)
+  },
+  beforeDestroy() {
+    // cleaning up the memory if the component is destroyed
+    clearInterval(this.updateLocation)
+  },
+  data() {
+    return {
+      updateLocation: null
+    }
+  },
+  computed: {
+    ...mapState({
+      isLogged: state => state.user.isLogged
+    })
+  },
+  watch: {
+    isLogged: function(newVal) {
+      // observing the changes in isLogged in order to
+      // change of view, to home or sig in
+      console.log(`isLogged: ${newVal}`)
+      if (newVal) {
+        this.$router.push({ name: 'home' })
+      } else {
+        this.$router.push({ name: 'sigin' })
+      }
+    }
+  }
+}
+</script>
