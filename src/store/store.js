@@ -4,13 +4,15 @@ import Vuex from 'vuex'
 // importing modules
 import * as notification from '@/store/modules/notification.js'
 import * as user from '@/store/modules/user.js'
+import * as congregation from '@/store/modules/congregation.js'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
     user,
-    notification
+    notification,
+    congregation
   },
   state: {
     coordinates: {

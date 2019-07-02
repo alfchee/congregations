@@ -3,7 +3,7 @@
     <!-- Top Nav toolbar -->
     <v-toolbar app absolute color="primary">
       <!-- Dropdown of main navigation -->
-      <v-menu bottom right nudge-bottom="42" v-if="isLogged">
+      <v-menu bottom right nudge-bottom="42">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" class="white--text">
             <v-icon>more_vert</v-icon>
@@ -19,7 +19,10 @@
             <v-list-tile-title>Dashboard</v-list-tile-title>
           </v-list-tile>
           <!-- Congregations -->
-          <v-list-tile :to="{ path: '/contacts' }" v-if="isContributor">
+          <v-list-tile
+            :to="{ name: 'congregations' }"
+            v-if="isLogged && (isContributor || isAdmin)"
+          >
             <v-list-tile-avatar>
               <v-icon>contacts</v-icon>
             </v-list-tile-avatar>
@@ -29,18 +32,25 @@
 
         <v-list>
           <!-- Users -->
-          <v-list-tile :to="{ path: '/users' }" v-if="isAdmin">
+          <v-list-tile :to="{ path: '/users' }" v-if="isLogged && isAdmin">
             <v-list-tile-avatar>
               <v-icon>people</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-title>Users</v-list-tile-title>
           </v-list-tile>
           <!-- Logout -->
-          <v-list-tile @click.prevent="singOut">
+          <v-list-tile @click.prevent="singOut" v-if="isLogged">
             <v-list-tile-avatar>
               <v-icon>mobile_off</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-title>Sign Out</v-list-tile-title>
+          </v-list-tile>
+          <!-- Logout -->
+          <v-list-tile :to="{ name: 'signin' }" v-if="!isLogged">
+            <v-list-tile-avatar>
+              <v-icon>account_circle</v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-title>Sign In</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-menu>

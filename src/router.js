@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
+import Congregations from '@/views/Congregations.vue'
 import SignIn from '@/views/SignIn.vue'
 import AuthService from '@/services/AuthService'
 
@@ -16,8 +17,23 @@ const router = new Router({
       component: Dashboard
     },
     {
-      path: '/sigin',
-      name: 'sigin',
+      path: '/congregations',
+      name: 'congregations',
+      component: Congregations,
+      meta: {
+        requiresAuth: true
+      },
+      children: [
+        {
+          path: 'create',
+          name: 'congregations-create',
+          component: Congregations
+        }
+      ]
+    },
+    {
+      path: '/signin',
+      name: 'signin',
       component: SignIn
     }
     // {
