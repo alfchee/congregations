@@ -27,7 +27,7 @@
                 <v-list-tile
                   v-for="congregation in congregations"
                   :key="congregation.id"
-                  @click.stop
+                  @click.stop="openEdit(congregation.id)"
                 >
                   <v-list-tile-avatar>
                     <v-icon class="grey lighten-1 white--text"
@@ -36,10 +36,20 @@
                   </v-list-tile-avatar>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>
-                      {{ congregation.name }}
-                    </v-list-tile-title>
+                    <v-list-tile-title>{{
+                      congregation.name
+                    }}</v-list-tile-title>
                   </v-list-tile-content>
+
+                  <v-list-tile-action>
+                    <v-btn
+                      icon
+                      ripple
+                      @click.stop="deleteCongregation(congregation.id)"
+                    >
+                      <v-icon color="grey lighten-1">delete</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
                 </v-list-tile>
               </div>
 
@@ -49,6 +59,9 @@
             </v-list>
           </v-card-text>
         </v-card>
+
+        <!-- Router for the modal view of create and edit -->
+        <router-view></router-view>
       </v-flex>
     </v-layout>
   </v-container>
@@ -68,11 +81,11 @@ export default {
     ...mapState('congregation', ['congregations'])
   },
   methods: {
-    // openEdit(id) {
-    //   // redirecting to edit modal view
-    //   this.$router.push({ name: 'companies-edit', params: { id } })
-    // },
-    ...mapActions('congregation', ['fetchCongregations'])
+    openEdit(id) {
+      // redirecting to edit modal view
+      this.$router.push({ name: 'congregations-edit', params: { id } })
+    },
+    ...mapActions('congregation', ['fetchCongregations', 'deleteCongregation'])
   }
 }
 </script>

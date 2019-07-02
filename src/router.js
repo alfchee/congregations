@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import Congregations from '@/views/Congregations.vue'
+import CongregationModalForm from '@/components/CongregationModalForm.vue'
 import SignIn from '@/views/SignIn.vue'
 import AuthService from '@/services/AuthService'
 
@@ -27,7 +28,13 @@ const router = new Router({
         {
           path: 'create',
           name: 'congregations-create',
-          component: Congregations
+          component: CongregationModalForm
+        },
+        {
+          path: 'edit/:id',
+          name: 'congregations-edit',
+          component: CongregationModalForm,
+          props: true
         }
       ]
     },
