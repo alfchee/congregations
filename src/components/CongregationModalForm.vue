@@ -67,7 +67,7 @@
                       persistent-hint
                       required
                       type="number"
-                      v-model="coordinates.long"
+                      v-model="coordinates.lng"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -100,7 +100,7 @@ export default {
         this.address = congregation.address || ''
         this.city = congregation.city || ''
         this.country = congregation.country || ''
-        this.coordinates = congregation.coordinates || { lat: 0, long: 0 }
+        this.coordinates = congregation.coordinates || { lat: 0, lng: 0 }
         this.congregationEdited = congregation
       }
     }
@@ -114,7 +114,7 @@ export default {
       country: '',
       coordinates: {
         lat: 0,
-        long: 0
+        lng: 0
       },
       congregationEdited: null
     }
@@ -141,7 +141,10 @@ export default {
         address: this.address,
         city: this.city,
         country: this.country,
-        coordinates: this.coordinates,
+        coordinates: {
+          lat: 1 * this.coordinates.lat,
+          lng: 1 * this.coordinates.lng
+        },
         createdAt: firebase.firestore.Timestamp.fromDate(new Date())
       }
 
