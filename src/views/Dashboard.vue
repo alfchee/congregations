@@ -14,7 +14,10 @@
                 <v-list-tile
                   v-for="congregation in near"
                   :key="congregation.id"
-                  @click.stop
+                  :to="{
+                    name: 'congregation-details',
+                    params: { id: congregation.id }
+                  }"
                 >
                   <v-list-tile-avatar>
                     <v-icon class="grey lighten-1 white--text"
@@ -27,7 +30,7 @@
                       {{ congregation.name }}
                     </v-list-tile-title>
                     <p class="body-1 gray--text text--lighten-2">
-                      Distance {{ congregation.distance.toFixed(3) }}Km
+                      Distance {{ congregation.distance | distance }}
                     </p>
                   </v-list-tile-content>
                 </v-list-tile>
@@ -56,6 +59,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import GoogleMaps from '@/components/GoogleMaps'
+import { isNumber } from 'util'
 
 export default {
   components: {
@@ -84,6 +88,13 @@ export default {
   },
   methods: {
     ...mapActions('congregation', ['fetchCongregationsNear'])
+  },
+  filters: {
+    distance: function(value) {
+      if (!value || !isNumber(value)) return ''
+
+      return `${value.toFixed(3)}Km`
+    }
   },
   watch: {
     coordinates(newVal) {

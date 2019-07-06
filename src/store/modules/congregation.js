@@ -17,6 +17,10 @@ export const mutations = {
   SET_CONGREGATIONS_NEAR(state, congregations) {
     state.near = congregations
   },
+  // add a congregation in the array of near congregations
+  ADD_CONGREGATION_NEAR(state, congregation) {
+    state.near.push(congregation)
+  },
   // add a congregation in the array of congregations at state
   ADD_CONGREGATION(state, congregation) {
     state.congregations = [...state.congregations, congregation]
@@ -37,6 +41,22 @@ export const mutations = {
 }
 
 export const actions = {
+  async fetchNearCongregation({ commit, dispatch }, id) {
+    const congregation = await CongregationService.getCongregationById(
+      id
+    ).catch(err => {
+      console.log('ERROR:', err)
+      publishNotification(
+        'error',
+        `Error fetching congregation. ${err.message}`,
+        dispatch
+      )
+    })
+
+    if (congregation) {
+      commit('ADD_CONGREGATION_NEAR', congregation)
+    }
+  },
   /**
    * Fetch last created congregations from database
    * @param {*} Vuex objects
@@ -140,6 +160,10 @@ export const actions = {
 export const getters = {
   getById: state => id => {
     const congregation = state.congregations.find(el => el.id === id)
+    return congregation
+  },
+  getNearById: state => id => {
+    const congregation = state.near.find(el => el.id === id)
     return congregation
   }
 }
