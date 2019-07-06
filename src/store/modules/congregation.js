@@ -4,13 +4,18 @@ import { publishNotification } from '@/utils/storeHelpers.js'
 export const namespaced = true
 
 export const state = {
-  congregations: []
+  congregations: [],
+  near: []
 }
 
 export const mutations = {
   // set a collection of congregations in the state
   SET_CONGREGATIONS(state, congregations) {
     state.congregations = congregations
+  },
+  // set a collection of congregations near the user
+  SET_CONGREGATIONS_NEAR(state, congregations) {
+    state.near = congregations
   },
   // add a congregation in the array of congregations at state
   ADD_CONGREGATION(state, congregation) {
@@ -120,6 +125,15 @@ export const actions = {
           dispatch
         )
       })
+  },
+  async fetchCongregationsNear({ commit }, coordinates) {
+    const congregations = await CongregationService.getCongregationsNear(
+      coordinates
+    )
+
+    if (congregations) {
+      commit('SET_CONGREGATIONS_NEAR', congregations)
+    }
   }
 }
 

@@ -1,10 +1,10 @@
 import firebase from '@/utils/firebase'
 import { Geokit } from 'geokit'
 import {
-  GeoCollectionReference,
-  GeoFirestore,
-  GeoQuery,
-  GeoQuerySnapshot
+  // GeoCollectionReference,
+  GeoFirestore
+  // GeoQuery,
+  // GeoQuerySnapshot
 } from 'geofirestore'
 
 const db = firebase.firestore()
@@ -57,6 +57,45 @@ export default {
         querySnapshot.forEach(doc => {
           congregations.push({ ...doc.data(), id: doc.id })
         })
+      })
+      .catch(err => {
+        throw err
+      })
+
+    return congregations
+  },
+  async getCongregationsNear(coordinates) {
+    const congregations = []
+    // create a geo query
+    await geoCollectionRef
+      .near({
+        center: new firebase.firestore.GeoPoint(
+          coordinates.lat,
+          coordinates.lng
+        ),
+        radius: 100
+      })
+      .get()
+      .then(geoQuerySnapshot => {
+        console.log('geoQuerySnapshot', geoQuerySnapshot)
+
+        for (let i = 0; i < geoQuerySnapshot.docs.length; i++) {
+          let geoDoc = geoQuerySnapshot.docs[i]
+
+          congregationsRef
+            .doc(geoDoc.data().congregation)
+            .get()
+            .then(cong => {
+              congregations.push({
+                ...cong.data(),
+                id: cong.id,
+                distance: geoDoc.distance
+              })
+            })
+            .catch(err => {
+              throw err
+            })
+        }
       })
       .catch(err => {
         throw err

@@ -14,7 +14,6 @@ import firebase from '@/utils/firebase'
 import store from '@/store/store'
 import { mapState } from 'vuex'
 import NotificationContainer from '@/components/NotificationContainer.vue'
-import { setInterval, clearInterval } from 'timers'
 
 /**
  * Observer waiting for the user get obtained from Firebase SDK
@@ -38,18 +37,6 @@ export default {
   name: 'App',
   components: {
     NotificationContainer
-  },
-  created() {
-    // set an interval to update the location every 10 seconds
-    this.updateLocation = setInterval(() => {
-      if (this.isLogged) {
-        this.$store.dispatch('getCurrentLocation')
-      }
-    }, 10000)
-  },
-  beforeDestroy() {
-    // cleaning up the memory if the component is destroyed
-    clearInterval(this.updateLocation)
   },
   data() {
     return {
