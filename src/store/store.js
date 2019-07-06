@@ -17,14 +17,14 @@ export default new Vuex.Store({
   state: {
     coordinates: {
       lat: null,
-      lon: null
+      lng: null
     },
     positionAccuracy: 0
   },
   mutations: {
     SET_LOCATION(state, coor) {
       // setting the coordinates of the position
-      state.coordinates = { lat: coor.latitude, lon: coor.longitude }
+      state.coordinates = { lat: coor.latitude, lng: coor.longitude }
       // setting the accuracy of the position
       state.positionAccuracy = coor.accuracy
     }
