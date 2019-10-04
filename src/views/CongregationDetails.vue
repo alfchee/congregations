@@ -1,7 +1,7 @@
 <template>
   <v-container fluid grid-list-lg class="pa-0 mt-3">
     <v-layout row justify-center>
-      <v-flex md10 xs12>
+      <v-flex md7 xs12>
         <v-card>
           <v-card-title primary-title>
             <span class="title">{{ name }}</span>
@@ -24,7 +24,13 @@
                 </p>
               </v-flex>
               <v-flex md6 xs12>
-                <p>Map here</p>
+                <p class="map-container" v-if="this.coordinates">
+                  <GoogleStaticMaps
+                    :center="coordinates"
+                    :zoom="18"
+                    :markers="congregationAsMarker"
+                  />
+                </p>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -37,8 +43,12 @@
 <script>
 import { mapState } from 'vuex'
 import { isArray } from 'util'
+import GoogleStaticMaps from '@/components/GoogleStaticMaps'
 
 export default {
+  components: {
+    GoogleStaticMaps
+  },
   props: {
     id: {
       type: String,
@@ -78,6 +88,21 @@ export default {
         return this.congregation ? this.congregation.country : ''
       }
     },
+    coordinates: {
+      get() {
+        return this.congregation ? this.congregation.coordinates : null
+      }
+    },
+    congregationAsMarker: {
+      get() {
+        return [
+          {
+            label: 'X',
+            locations: [{ ...this.coordinates }]
+          }
+        ]
+      }
+    },
     ...mapState({
       near: state => state.congregation.near
     })
@@ -92,4 +117,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.map-container {
+  width: 100%;
+}
+</style>
