@@ -64,10 +64,20 @@ export default {
 
     return congregations
   },
+  async getCongregationById(id) {
+    const doc = await congregationsRef
+      .doc(id)
+      .get()
+      .catch(err => {
+        throw err
+      })
+
+    return { ...doc.data(), id: doc.id }
+  },
   async getCongregationsNear(coordinates) {
     const congregations = []
-    // create a geo query
-    await geoCollectionRef
+    // create a geo query and wait for the query snapshot
+    const geoQuerySnapshot = await geoCollectionRef
       .near({
         center: new firebase.firestore.GeoPoint(
           coordinates.lat,
@@ -76,30 +86,26 @@ export default {
         radius: 100
       })
       .get()
-      .then(geoQuerySnapshot => {
-        console.log('geoQuerySnapshot', geoQuerySnapshot)
 
-        for (let i = 0; i < geoQuerySnapshot.docs.length; i++) {
-          let geoDoc = geoQuerySnapshot.docs[i]
+    // loop the result and get the documents
+    for (let i = 0; i < geoQuerySnapshot.docs.length; i++) {
+      let geoDoc = geoQuerySnapshot.docs[i]
 
-          congregationsRef
-            .doc(geoDoc.data().congregation)
-            .get()
-            .then(cong => {
-              congregations.push({
-                ...cong.data(),
-                id: cong.id,
-                distance: geoDoc.distance
-              })
-            })
-            .catch(err => {
-              throw err
-            })
-        }
-      })
-      .catch(err => {
-        throw err
-      })
+      // query the congregation collection to get the documents
+      await congregationsRef
+        .doc(geoDoc.data().congregation)
+        .get()
+        .then(cong => {
+          congregations.push({
+            ...cong.data(),
+            id: cong.id,
+            distance: geoDoc.distance
+          })
+        })
+        .catch(err => {
+          throw err
+        })
+    }
 
     return congregations
   },

@@ -82,27 +82,5 @@ export default {
     }
 
     return user
-  },
-  /**
-   * Store in DB the custom message to be used in SMS
-   * @param {*} uid ID of the User in DB
-   * @param {*} newMessage Message that we want to be used in SMS
-   */
-  updateCustomMessage(uid, newMessage) {
-    // getting the user document by the ID
-    const userRef = db.collection('users').doc(uid)
-
-    return userRef.update({ customMessage: newMessage })
-  },
-  /**
-   * This method takes an array of Contacts and replace the array of the object in DB
-   * @param {*} uid ID of the user in DB
-   * @param {*} contacts Array of contacts to replace the array in DB
-   */
-  updateContacts(uid, contacts) {
-    // getting the user document by ID
-    const userRef = db.collection('users').doc(uid)
-
-    return userRef.update({ contacts })
   }
 }

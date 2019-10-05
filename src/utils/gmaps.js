@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyAY1RDDFh6rwH32Iovo38HSs8RVTJaUSws'
+export const API_KEY = 'AIzaSyAY1RDDFh6rwH32Iovo38HSs8RVTJaUSws'
 const CALLBACK_NAME = 'initMap'
 
 let initialized = !!window.google
