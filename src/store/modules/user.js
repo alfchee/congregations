@@ -8,9 +8,7 @@ export const state = {
   token: localStorage.getItem('token') || '',
   isLogged: false,
   isAdmin: false,
-  isContributor: false,
-  contacts: [],
-  customMessage: ''
+  isContributor: false
 }
 
 export const mutations = {
@@ -24,15 +22,6 @@ export const mutations = {
   },
   SET_ADMIN_USER(state, isAdmin) {
     state.isAdmin = isAdmin
-  },
-  SET_CONTACTS(state, contacts) {
-    state.contacts = contacts
-  },
-  ADD_CONTACT(state, contact) {
-    state.contacts.push(contact)
-  },
-  SET_CUSTOM_MESSAGE(state, message) {
-    state.customMessage = message
   },
   LOGOUT(state) {
     state.isLogged = false
@@ -66,109 +55,7 @@ export const actions = {
     if (user) {
       // commit in the state the stored info in DB
       commit('SET_ADMIN_USER', user.isAdmin)
-      commit('SET_CONTACTS', user.contacts)
-      commit('SET_CUSTOM_MESSAGE', user.customMessage)
     }
-  },
-  /**
-   * Stores in DB the custom message to be send through SMS
-   * @param {*} Vuex Objects
-   * @param {*} newMessage New Custom Message for SMS
-   */
-  updateCustomMessage({ state, commit, dispatch }, newMessage) {
-    AuthService.updateCustomMessage(state.user.uid, newMessage)
-      .then(() => {
-        commit('SET_CUSTOM_MESSAGE', newMessage)
-        // show notification
-        publishNotification(
-          'success',
-          'The Message was successfuly saved!',
-          dispatch
-        )
-      })
-      .catch(err => {
-        console.error('ERROR:', err)
-        publishNotification(
-          'error',
-          'There was an error updating Message. ' + err.message,
-          dispatch
-        )
-      })
-  },
-  /**
-   * Adds a new contact to the contact array of the user
-   * @param {*} Vuex objects
-   * @param {*} contact New contact
-   */
-  addContact({ state, commit, dispatch }, contact) {
-    // getting the new array of contacts
-    const contacts = [...state.contacts, ...[contact]]
-
-    AuthService.updateContacts(state.user.uid, contacts)
-      .then(() => {
-        commit('ADD_CONTACT', contact)
-        publishNotification(
-          'success',
-          'The contact was successfuly added!',
-          dispatch
-        )
-      })
-      .catch(err => {
-        console.error('ERROR:', err)
-        publishNotification(
-          'error',
-          'There was an error adding the contact. ' + err.message,
-          dispatch
-        )
-      })
-  },
-  updateContact({ state, commit, dispatch }, contact) {
-    // getting the contacts without the contact to replace
-    const contacts = state.contacts.filter(el => el.id !== contact.id)
-    // adding the contact edited
-    contacts.push(contact)
-    // sorting
-    contacts.sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0))
-    // Updating
-    AuthService.updateContacts(state.user.uid, contacts)
-      .then(() => {
-        commit('SET_CONTACTS', contacts)
-        publishNotification(
-          'success',
-          'The contact was sucessfuly updated!',
-          dispatch
-        )
-      })
-      .catch(err => {
-        publishNotification(
-          'error',
-          'There was an error updating the contact. ' + err.message,
-          dispatch
-        )
-      })
-  },
-  /**
-   * Deletes a contact from the array of contacts, given the ID
-   * @param {*} Vuex objects
-   * @param {*} id Id of the contact to remove
-   */
-  deleteContact({ state, commit, dispatch }, id) {
-    // update the array of contacts, removing the one with id
-    const contacts = state.contacts.filter(el => el.id !== id)
-
-    AuthService.updateContacts(state.user.uid, contacts)
-      .then(() => {
-        commit('SET_CONTACTS', contacts)
-        publishNotification('success', 'The contact was removed!', dispatch)
-      })
-      .catch(err => {
-        console.log('ERROR:', err)
-        publishNotification(
-          'error',
-          'There was an error while removing the contact. ' + err.message,
-          dispatch
-        )
-      })
   },
   /**
    * Starts the Sign In with Google Flow of Firebase
