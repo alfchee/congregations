@@ -1,14 +1,17 @@
 import AuthService from '@/services/AuthService'
 import { publishNotification } from '@/utils/storeHelpers.js'
+import UserService from '../../services/UserService'
 
 export const namespaced = true
 
 export const state = {
-  user: JSON.parse(localStorage.getItem('user')) || {},
-  token: localStorage.getItem('token') || '',
+  user: JSON.parse(localStorage.getItem('cc_user')) || {},
+  token: localStorage.getItem('cc_token') || '',
   isLogged: false,
   isAdmin: false,
-  isContributor: false
+  isContributor: false,
+  usersList: [],
+  unapprovedUsers: []
 }
 
 export const mutations = {
@@ -17,19 +20,37 @@ export const mutations = {
     state.user = user
     state.token = token
     // set in local storage
-    localStorage.setItem('user', JSON.stringify(user))
-    localStorage.setItem('token', JSON.stringify(token))
+    localStorage.setItem('cc_user', JSON.stringify(user))
+    localStorage.setItem('cc_token', JSON.stringify(token))
   },
-  SET_ADMIN_USER(state, isAdmin) {
-    state.isAdmin = isAdmin
+  SET_PERMISSIONS(state, user) {
+    state.isAdmin = user.isAdmin
+    state.isContributor = user.isContributor
   },
   LOGOUT(state) {
     state.isLogged = false
     state.user = {}
     state.token = ''
     // remove from local storage
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
+    localStorage.removeItem('cc_user')
+    localStorage.removeItem('cc_token')
+  },
+  SET_USERS_LIST(state, users) {
+    state.usersList = users
+  },
+  SET_UNAPPROVED_USERS(state, users) {
+    state.unapprovedUsers = users
+  },
+  UPDATE_USER_INFO(state, values) {
+    // getting the user from the store using the ID
+    let user = state.usersList.find(u => {
+      u.id === values.id
+    })
+
+    if (user) {
+      // if user found overwrite with new values
+      Object.assign(user, values)
+    }
   }
 }
 
@@ -54,7 +75,7 @@ export const actions = {
 
     if (user) {
       // commit in the state the stored info in DB
-      commit('SET_ADMIN_USER', user.isAdmin)
+      commit('SET_PERMISSIONS', user)
     }
   },
   /**
@@ -93,6 +114,90 @@ export const actions = {
         publishNotification(
           'error',
           'There was an error when sign out. ' + err.message,
+          dispatch
+        )
+      })
+  },
+  getLatApprovedUsers({ commit, dispatch }) {
+    UserService.getLastApprovedUsers()
+      .then(users => {
+        commit('SET_USERS_LIST', users)
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error fetching users. ' + err.message,
+          dispatch
+        )
+      })
+  },
+  getUnapprovedUsers({ commit, dispatch }) {
+    UserService.getUnapprovedUsers()
+      .then(users => {
+        commit('SET_UNAPPROVED_USERS', users)
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error fetching users. ' + err.message,
+          dispatch
+        )
+      })
+  },
+  updateAdmin({ commit, dispatch }, values) {
+    UserService.updateAdmin(values)
+      .then(() => {
+        commit('UPDATE_USER_INFO', values)
+        // display notification
+        publishNotification(
+          'success',
+          'The user has been upgraded to Admin.',
+          dispatch
+        )
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error updating user.' + err.message,
+          dispatch
+        )
+      })
+  },
+  async upVoteUser({ commit, dispatch }, values) {
+    return UserService.upVoteUser(values)
+      .then(() => {
+        commit('UPDATE_USER_INFO', values)
+        // display notification
+        publishNotification('success', 'Your vote has been added.', dispatch)
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error updating user.' + err.message,
+          dispatch
+        )
+      })
+  },
+  async approveByAdmin({ commit, dispatch }, values) {
+    return UserService.approveByAdmin(values)
+      .then(() => {
+        commit('UPDATE_USER_INFO', values)
+        // display notification
+        publishNotification(
+          'success',
+          'The user has been approved as Contributor',
+          dispatch
+        )
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error updating user. ' + err.message,
           dispatch
         )
       })

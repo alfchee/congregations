@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import Congregations from '@/views/Congregations.vue'
+import Users from '@/views/Users.vue'
 import CongregationDetails from '@/views/CongregationDetails.vue'
 import CongregationModalForm from '@/components/CongregationModalForm.vue'
 import SignIn from '@/views/SignIn.vue'
@@ -44,6 +45,14 @@ const router = new Router({
           props: true
         }
       ]
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Users,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/signin',

@@ -5,7 +5,11 @@
       <v-flex md12 xs12 class="pa-0">
         <v-toolbar flat color="primary">
           <v-toolbar-items>
-            <v-btn flat color="white" :to="{ name: 'congregations-create' }"
+            <v-btn
+              flat
+              color="white"
+              :to="{ name: 'congregations-create' }"
+              v-if="isContributor || isAdmin"
               >Create Congregation</v-btn
             >
           </v-toolbar-items>
@@ -36,9 +40,9 @@
                   </v-list-tile-avatar>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>{{
-                      congregation.name
-                    }}</v-list-tile-title>
+                    <v-list-tile-title>
+                      {{ congregation.name }}
+                    </v-list-tile-title>
                   </v-list-tile-content>
 
                   <v-list-tile-action>
@@ -78,6 +82,11 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      isLogged: state => state.user.isLogged,
+      isAdmin: state => state.user.isAdmin,
+      isContributor: state => state.user.isContributor
+    }),
     ...mapState('congregation', ['congregations'])
   },
   methods: {
