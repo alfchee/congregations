@@ -10,8 +10,7 @@
               color="white"
               :to="{ name: 'congregations-create' }"
               v-if="isContributor || isAdmin"
-              >Create Congregation</v-btn
-            >
+            >Create Congregation</v-btn>
           </v-toolbar-items>
         </v-toolbar>
       </v-flex>
@@ -34,32 +33,34 @@
                   @click.stop="openEdit(congregation.id)"
                 >
                   <v-list-tile-avatar>
-                    <v-icon class="grey lighten-1 white--text"
-                      >store_mall_directory</v-icon
-                    >
+                    <v-icon class="grey lighten-1 white--text">store_mall_directory</v-icon>
                   </v-list-tile-avatar>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>
-                      {{ congregation.name }}
-                    </v-list-tile-title>
+                    <v-list-tile-title>{{ congregation.name }}</v-list-tile-title>
                   </v-list-tile-content>
 
                   <v-list-tile-action>
                     <v-btn
-                      icon
-                      ripple
-                      @click.stop="deleteCongregation(congregation.id)"
-                    >
+                      color="primary"
+                      class="white--text"
+                      v-if="isContributor && !congregation.inCommunion"
+                      @click.stop="upVote(congregation)"
+                    >Approve</v-btn>
+                    <v-btn
+                      color="primary"
+                      class="white--text"
+                      v-if="isAdmin && !congregation.inCommunion"
+                      @click.stop="approvedByAdmin(congregation)"
+                    >Admin Approve</v-btn>
+                    <v-btn icon ripple @click.stop="deleteCongregation(congregation.id)">
                       <v-icon color="grey lighten-1">delete</v-icon>
                     </v-btn>
                   </v-list-tile-action>
                 </v-list-tile>
               </div>
 
-              <v-alert color="info" :value="true" icon="info" outline v-else
-                >No congregation found</v-alert
-              >
+              <v-alert color="info" :value="true" icon="info" outline v-else>No congregation found</v-alert>
             </v-list>
           </v-card-text>
         </v-card>
@@ -85,7 +86,8 @@ export default {
     ...mapState({
       isLogged: state => state.user.isLogged,
       isAdmin: state => state.user.isAdmin,
-      isContributor: state => state.user.isContributor
+      isContributor: state => state.user.isContributor,
+      currentUser: state => state.user.user
     }),
     ...mapState('congregation', ['congregations'])
   },
@@ -94,9 +96,46 @@ export default {
       // redirecting to edit modal view
       this.$router.push({ name: 'congregations-edit', params: { id } })
     },
-    ...mapActions('congregation', ['fetchCongregations', 'deleteCongregation'])
+    upVote(congregation) {
+      // getting the array of approvers
+      let approvers = congregation.approvers || []
+      // adding the email of the current user
+      approvers.push(this.currentUser.email)
+
+      // saving changes
+      this.upVoteCongregation({
+        id: congregation.id,
+        approvers
+      })
+    },
+    approvedByAdmin(congregation) {
+      // getting the array of approvers
+      let approvers = congregation.approvers || []
+      // adding the email fo the curren admin user
+      approvers.push(this.currentUser.email)
+
+      // storing the change
+      this.approveByAdmin({
+        id: congregation.id,
+        approvers
+      })
+    },
+    ...mapActions('congregation', [
+      'fetchCongregations',
+      'deleteCongregation',
+      'upVoteCongregation',
+      'approveByAdmin'
+    ])
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-list__tile__action .v-btn {
+  padding: 0 16px;
+}
+.v-list__tile__action--stack {
+  flex-direction: row !important;
+  width: 280px !important;
+}
+</style>

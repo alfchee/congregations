@@ -27,9 +27,17 @@ export const mutations = {
   },
   // update one congregation in the state
   UPDATE_CONGREGATION(state, congregation) {
+    // getting the congregation from the store using the ID
+    let cong = state.congregations.find(c => c.id == congregation.id)
+
+    if (cong) {
+      // if congregation found overwrite with new values
+      Object.assign(cong, congregation)
+    }
+
     // creating a new array of objects filtered
     let filtered = state.congregations.filter(el => el.id !== congregation.id)
-    filtered.push(congregation)
+    filtered.push(cong)
     state.congregations = filtered
   },
   // delete one congregation from the state
@@ -95,7 +103,7 @@ export const actions = {
       commit('ADD_CONGREGATION', created)
       publishNotification(
         'success',
-        `The congregation was successfully created.`,
+        `The congregation was successfully created. It will not be displayed until three Contributors review it or one Admin.`,
         dispatch
       )
     }
@@ -154,6 +162,42 @@ export const actions = {
     if (congregations) {
       commit('SET_CONGREGATIONS_NEAR', congregations)
     }
+  },
+  async upVoteCongregation({ commit, dispatch }, values) {
+    return CongregationService.upVote(values)
+      .then(() => {
+        commit('UPDATE_CONGREGATION', values)
+        // display notification
+        publishNotification('success', 'Your vote has been added.', dispatch)
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error updating congregation. ' + err.message,
+          dispatch
+        )
+      })
+  },
+  async approveByAdmin({ commit, dispatch }, values) {
+    return CongregationService.approveByAdmin(values)
+      .then(() => {
+        commit('UPDATE_CONGREGATION', { ...values, inCommunion: true })
+        // display notification
+        publishNotification(
+          'success',
+          'The congregation has been approved.',
+          dispatch
+        )
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        publishNotification(
+          'error',
+          'There was an error updating the congregation. ' + err.message,
+          dispatch
+        )
+      })
   }
 }
 

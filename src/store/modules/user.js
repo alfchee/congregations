@@ -43,9 +43,7 @@ export const mutations = {
   },
   UPDATE_USER_INFO(state, values) {
     // getting the user from the store using the ID
-    let user = state.usersList.find(u => {
-      u.id === values.id
-    })
+    let user = state.usersList.find(u => u.id === values.id)
 
     if (user) {
       // if user found overwrite with new values
