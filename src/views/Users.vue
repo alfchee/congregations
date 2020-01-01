@@ -28,7 +28,11 @@
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title>{{ uUser.displayName }}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ uUser.email }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>
+                    {{
+                    uUser.email
+                    }}
+                  </v-list-tile-sub-title>
                 </v-list-tile-content>
 
                 <v-list-tile-action>
@@ -155,7 +159,7 @@ export default {
     },
     approvedByAdmin(user) {
       // getting the array of approvers
-      let approvers = user.approvers
+      let approvers = user.approvers || []
       // adding the email of the current admin user
       approvers.push(this.currentUser.email)
 

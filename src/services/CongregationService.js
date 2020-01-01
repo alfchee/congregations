@@ -96,11 +96,16 @@ export default {
         .doc(geoDoc.data().congregation)
         .get()
         .then(cong => {
-          congregations.push({
-            ...cong.data(),
-            id: cong.id,
-            distance: geoDoc.distance
-          })
+          const congData = cong.data()
+
+          // displaying only in communion congregations
+          if (congData.inCommunion) {
+            congregations.push({
+              ...congData,
+              id: cong.id,
+              distance: geoDoc.distance
+            })
+          }
         })
         .catch(err => {
           throw err
@@ -114,7 +119,9 @@ export default {
    * @param {*} congregation Congregation object to be stored in database
    */
   async create(congregation) {
+    // creating geohash using coordinates
     const hash = Geokit.hash(congregation.coordinates)
+    // adding the geohash to the congregation before to save
     congregation.geohash = hash
 
     await congregationsRef
@@ -123,6 +130,7 @@ export default {
         // adding the ID of the document to be referenced in the app state
         congregation.id = docRef.id
 
+        // storing the geohash and congregation into a collection of geohashes
         await storeGeoData(hash, congregation)
       })
       .catch(err => {
@@ -179,5 +187,15 @@ export default {
             })
           })
       })
+  },
+  async upVote({ id, approvers }) {
+    // counting the approvers to know if is in communion
+    const inCommunion = approvers.length >= 3 ? true : false
+    const congRef = congregationsRef.doc(id)
+
+    return congRef.update({ approvers, inCommunion })
+  },
+  async approveByAdmin({ id, approvers }) {
+    return congregationsRef.doc(id).update({ approvers, inCommunion: true })
   }
 }
